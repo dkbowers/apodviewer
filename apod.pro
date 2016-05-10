@@ -17,13 +17,11 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     spaceimages.cpp \
-    spaceimage.cpp \
-    httpdownload.cpp
+    spaceimage.cpp
 
 HEADERS  += mainwindow.h \
     spaceimages.h \
-    spaceimage.h \
-    httpdownload.h
+    spaceimage.h
 
 FORMS    += mainwindow.ui
 

@@ -1,6 +1,7 @@
 #ifndef SPACEIMAGE_H
 #define SPACEIMAGE_H
 #include <string>
+using namespace std;
 
 class SpaceImage
 {

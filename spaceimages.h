@@ -2,6 +2,7 @@
 #define SPACEIMAGES_H
 
 #include <string>
+using namespace std;
 
 class SpaceImage;
 
