@@ -39,35 +39,45 @@ bool DbManager::addPicture(const QString& copyrightField,
                            const QString& media_typeField,
                            const QString& service_versionField,
                            const QString& titleField,
-                           const QString& url)
+                           const QString& urlField)
 {
     bool success = false;
 
-    if (!name.isEmpty())
-    {
-        QSqlQuery queryAdd;
-        queryAdd.prepare("INSERT INTO apod (copyright, picdate, explanation, hdurl, media_type, service_version, title, url) VALUES (:copyrightField,:dateField, :explanationField, :hdurlField, :media_typeField, :service_versionField, :titleField, :url)");
-        queryAdd.bindValue(":copyrightField", copyrightField);
-        queryAdd.bindValue(":dateField", dateField);
-        queryAdd.bindValue(":explanationField", explanationField);
-        queryAdd.bindValue(":hdurlField", hdurlField);
-        queryAdd.bindValue(":media_typeField", media_typeField);
-        queryAdd.bindValue(":service_versionField", service_versionField);
-        queryAdd.bindValue(":titleField", titleField);
-        queryAdd.bindValue(":url", url);
+    QSqlQuery queryAdd;
+    queryAdd.prepare("INSERT INTO apod (copyright, picdate, explanation, hdurl, media_type, service_version, title, url) VALUES (:copyrightField,:dateField, :explanationField, :hdurlField, :media_typeField, :service_versionField, :titleField, :url)");
+    /* INSERT INTO apod (copyright,
+                        picdate,
+                        explanation,
+                        hdurl,
+                        media_type,
+                        service_version,
+                        title,
+                        url)
+        VALUES (:copyrightField,
+                :dateField,
+                :explanationField,
+                :hdurlField,
+                :media_typeField,
+                :service_versionField,
+                :titleField,
+                :urlField)"); */
 
-        if(queryAdd.exec())
-        {
-            success = true;
-        }
-        else
-        {
-            qDebug() << "add person failed: " << queryAdd.lastError();
-        }
+    queryAdd.bindValue(":copyrightField", copyrightField);
+    queryAdd.bindValue(":dateField", dateField);
+    queryAdd.bindValue(":explanationField", explanationField);
+    queryAdd.bindValue(":hdurlField", hdurlField);
+    queryAdd.bindValue(":media_typeField", media_typeField);
+    queryAdd.bindValue(":service_versionField", service_versionField);
+    queryAdd.bindValue(":titleField", titleField);
+    queryAdd.bindValue(":urlField", urlField);
+
+    if(queryAdd.exec())
+    {
+        success = true;
     }
     else
     {
-        qDebug() << "add person failed: name cannot be empty";
+        qDebug() << "add picture failed: " << queryAdd.lastError();
     }
 
     return success;
@@ -78,7 +88,7 @@ bool DbManager::removePicture(const QString& date)
 {
     bool success = false;
 
-    if (personExists(name))
+    if (pictureExists(date))
     {
         QSqlQuery queryDelete;
         queryDelete.prepare("DELETE FROM apod WHERE picdate = (:date)");

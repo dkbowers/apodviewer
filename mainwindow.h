@@ -32,18 +32,12 @@ public:
 private:
     Ui::MainWindow *ui;
 
-private slots:
-    void handleButton();
-
 public:
     void startRequest(QUrl url);
 
 private slots:
+    void handleButton();
     void on_downloadButton_clicked();
-
-//    void on_quitButton_clicked();
-
-//    void on_urlEdit_returnPressed();
 
     // slot for readyRead() signal
     void httpReadyRead();
@@ -65,7 +59,9 @@ private:
     QFile *file;
     bool httpRequestAborted;
     qint64 fileSize;
-    QTemporaryDir tempDir;
+    QDir tempDir;
+    QByteArray downloadBuffer;
+    QString downloadDate;
 };
 
 #endif // MAINWINDOW_H

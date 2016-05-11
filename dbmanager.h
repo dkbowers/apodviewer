@@ -47,7 +47,7 @@ public:
                                const QString& media_typeField,
                                const QString& service_versionField,
                                const QString& titleField,
-                               const QString& url);
+                               const QString& urlField);
 
     /**
      * @brief Remove person data from db
