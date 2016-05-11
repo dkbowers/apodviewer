@@ -6,6 +6,7 @@
 
 QT += core gui
 QT += network
+QT += sql
 DEFINES  += QT_NO_SSL
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -17,11 +18,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     spaceimages.cpp \
-    spaceimage.cpp
+    spaceimage.cpp \
+    dbmanager.cpp
 
 HEADERS  += mainwindow.h \
     spaceimages.h \
-    spaceimage.h
+    spaceimage.h \
+    dbmanager.h
 
 FORMS    += mainwindow.ui
 

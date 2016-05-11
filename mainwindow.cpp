@@ -1,5 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QDir>
+#include <QDebug>
+#include <QTemporaryDir>
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -46,45 +50,91 @@ void MainWindow::on_downloadButton_clicked()
 {
     manager = new QNetworkAccessManager(this);
 
-    url = "https://api.nasa.gov/planetary/apod?api_key=0000000000000000000000000000000000000000";
-    fileName = QString("apod") + QDate::currentDate().toString(QString("yyyy-MM-dd") + QString(".txt"));
+    QDir dir;
+    qDebug() << "Created temporary directory";
+    if (tempDir.isValid()) {
+        qDebug() << "Directory is valid";
+        qDebug() << "Path is" << tempDir.path();
+        qDebug() << "AutoRemove is set to" << tempDir.autoRemove();
+        dir.setPath(tempDir.path());
+        if (dir.exists())
+            qDebug() << "Directory exists";
+        else
+            qDebug() << "Directory does not exist";
 
-    //QFileInfo fileInfo(url.path());
-    //QString fileName = fileInfo.fileName();
-    // if (fileName.isEmpty())
-    //    fileName = "index.html";
+        // Create a file in the directory and write some data to it.
+        QString m = QString("temp - ") + QDir::tempPath() + QString("   home - ") + QDir::homePath() + QString("   current - ") + QDir::currentPath();
+        qDebug() << m;
 
-    if (QFile::exists(fileName)) {
-        if (QMessageBox::question(this, tr("HTTP"),
-                tr("There already exists a file called %1 in "
-                "the current directory. Overwrite?").arg(fileName),
-                QMessageBox::Yes|QMessageBox::No, QMessageBox::No)
-                == QMessageBox::No)
-                return;
-        QFile::remove(fileName);
+        url = "https://api.nasa.gov/planetary/apod?api_key=F9WlCrPBArF5YuWIKJQ2sfDM9Ko6m6dJYlsTsbsh";
+        //url = "https://api.nasa.gov/planetary/apod?api_key=0000000000000000000000000000000000000000";
+        fileName = tempDir.path() + QString("/apod") + QDate::currentDate().toString(QString("yyyy-MM-dd") + QString(".txt"));
+
+        //QFileInfo fileInfo(url.path());
+        //QString fileName = fileInfo.fileName();
+        // if (fileName.isEmpty())
+        //    fileName = "index.html";
+
+        if (QFile::exists(fileName)) {
+            if (QMessageBox::question(this, tr("HTTP"),
+                    tr("There already exists a file called %1 in "
+                    "the current directory. Overwrite?").arg(fileName),
+                    QMessageBox::Yes|QMessageBox::No, QMessageBox::No)
+                    == QMessageBox::No)
+                    return;
+            QFile::remove(fileName);
+        }
+
+        file = new QFile(fileName);
+        if (!file->open(QIODevice::WriteOnly)) {
+            QMessageBox::information(this, tr("HTTP"),
+                          tr("Unable to save the file %1: %2.")
+                          .arg(fileName).arg(file->errorString()));
+            delete file;
+            file = 0;
+            return;
+        }
+
+        // used for progressDialog
+        // This will be set true when canceled from progress dialog
+        httpRequestAborted = false;
+
+        //progressDialog->setWindowTitle(tr("HTTP"));
+        //progressDialog->setLabelText(tr("Downloading %1.").arg(fileName));
+
+        // download button disabled after requesting download
+        //downloadButton->setEnabled(false);
+
+        startRequest(url);
+
+
+
+
+
+
+
+
+
+
+
+        //QFile file(tempDir.path() + "/testfile.txt");
+        //if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        //    qDebug() << "Created file in directory";
+        //    QTextStream out(&file); out << "Hello, world!\n";
+        //}
+        //else {
+        //    qDebug() << "Unable to create file in directory";
+        //}
+
+
+
+
+    } else {
+        qDebug() << "Directory is not valid";
     }
 
-    file = new QFile(fileName);
-    if (!file->open(QIODevice::WriteOnly)) {
-        QMessageBox::information(this, tr("HTTP"),
-                      tr("Unable to save the file %1: %2.")
-                      .arg(fileName).arg(file->errorString()));
-        delete file;
-        file = 0;
-        return;
-    }
 
-    // used for progressDialog
-    // This will be set true when canceled from progress dialog
-    httpRequestAborted = false;
 
-    //progressDialog->setWindowTitle(tr("HTTP"));
-    //progressDialog->setLabelText(tr("Downloading %1.").arg(fileName));
-
-    // download button disabled after requesting download
-    //downloadButton->setEnabled(false);
-
-    startRequest(url);
 }
 
 void MainWindow::httpReadyRead()

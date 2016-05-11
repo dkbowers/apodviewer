@@ -65,7 +65,7 @@ private:
     QFile *file;
     bool httpRequestAborted;
     qint64 fileSize;
-
+    QTemporaryDir tempDir;
 };
 
 #endif // MAINWINDOW_H
