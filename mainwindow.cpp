@@ -12,8 +12,8 @@ MainWindow::MainWindow(QWidget *parent) :
     qDebug() << "MainWindow::MainWindow(QWidget *parent) :QMainWindow(parent), ui(new Ui::MainWindow)";
 
     ui->setupUi(this);
-    connect(ui->pushButton, SIGNAL (released()),this, SLOT (handleButton()));
-    connect(ui->pushButtonToday, SIGNAL(clicked()), this, SLOT(on_downloadButton_clicked()));
+    connect(ui->pushButton, SIGNAL (released()),this, SLOT (on_downloadPicture_clicked()));
+    connect(ui->pushButtonToday, SIGNAL(clicked()), this, SLOT(on_downloadTodaysPicture_clicked()));
 
     downloadDate = QDate::currentDate().toString(QString("yyyy-MM-dd"));
 }
@@ -23,15 +23,15 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::handleButton()
+void MainWindow::on_downloadPicture_clicked()
 {
     qDebug() << "void MainWindow::handleButton()";
     downloadDate = ui->dateEdit->date().toString(QString("yyyy-MM-dd"));
     qDebug() << "dateEdit =>" << downloadDate;
-    on_downloadButton_clicked();
+    on_downloadTodaysPicture_clicked();
 }
 
-void MainWindow::on_downloadButton_clicked()
+void MainWindow::on_downloadTodaysPicture_clicked()
 {
     qDebug() << "void MainWindow::on_downloadButton_clicked()";
 
@@ -45,8 +45,6 @@ void MainWindow::on_downloadButton_clicked()
     url = sUrl;
     qDebug() << "url => " << sUrl;
 
-    //url = "https://api.nasa.gov/planetary/apod?api_key=0000000000000000000000000000000000000000";
-    //fileName = tempDir.path() + QString("/apod") + QDate::currentDate().toString(QString("yyyy-MM-dd") + QString(".txt"));
     fileName = tempDir.path();
     fileName += QString("/apod");
     fileName += downloadDate;

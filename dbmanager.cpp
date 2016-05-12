@@ -44,7 +44,16 @@ bool DbManager::addPicture(const QString& copyrightField,
     bool success = false;
 
     QSqlQuery queryAdd;
-    queryAdd.prepare("INSERT INTO apod (copyright, picdate, explanation, hdurl, media_type, service_version, title, url) VALUES (:copyrightField,:dateField, :explanationField, :hdurlField, :media_typeField, :service_versionField, :titleField, :url)");
+    queryAdd.prepare("INSERT INTO apod (copyright, explanation, hdurl, media_type, picdate, service_version, title, url) VALUES (?,?,?,?,?,?,?,?)");
+    queryAdd.bindValue(0, copyrightField);
+    queryAdd.bindValue(1, explanationField);
+    queryAdd.bindValue(2, hdurlField);
+    queryAdd.bindValue(3, media_typeField);
+    queryAdd.bindValue(4, dateField);
+    queryAdd.bindValue(5, service_versionField);
+    queryAdd.bindValue(6, titleField);
+    queryAdd.bindValue(7, urlField);
+
     /* INSERT INTO apod (copyright,
                         picdate,
                         explanation,
@@ -62,14 +71,15 @@ bool DbManager::addPicture(const QString& copyrightField,
                 :titleField,
                 :urlField)"); */
 
-    queryAdd.bindValue(":copyrightField", copyrightField);
-    queryAdd.bindValue(":dateField", dateField);
-    queryAdd.bindValue(":explanationField", explanationField);
-    queryAdd.bindValue(":hdurlField", hdurlField);
-    queryAdd.bindValue(":media_typeField", media_typeField);
-    queryAdd.bindValue(":service_versionField", service_versionField);
-    queryAdd.bindValue(":titleField", titleField);
-    queryAdd.bindValue(":urlField", urlField);
+    // queryAdd.prepare("INSERT INTO apod (copyright, picdate, explanation, hdurl, media_type, service_version, title, url) VALUES (:copyrightField,:dateField, :explanationField, :hdurlField, :media_typeField, :service_versionField, :titleField, :url)");
+    // queryAdd.bindValue(":copyrightField", copyrightField);
+    // queryAdd.bindValue(":dateField", dateField);
+    // queryAdd.bindValue(":explanationField", explanationField);
+    // queryAdd.bindValue(":hdurlField", hdurlField);
+    // queryAdd.bindValue(":media_typeField", media_typeField);
+    // queryAdd.bindValue(":service_versionField", service_versionField);
+    // queryAdd.bindValue(":titleField", titleField);
+    // queryAdd.bindValue(":urlField", urlField);
 
     if(queryAdd.exec())
     {

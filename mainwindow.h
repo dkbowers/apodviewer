@@ -36,8 +36,8 @@ public:
     void startRequest(QUrl url);
 
 private slots:
-    void handleButton();
-    void on_downloadButton_clicked();
+    void on_downloadPicture_clicked();
+    void on_downloadTodaysPicture_clicked();
 
     // slot for readyRead() signal
     void httpReadyRead();
