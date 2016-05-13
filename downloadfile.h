@@ -1,5 +1,5 @@
-#ifndef DOWNLOADIMAGE_H
-#define DOWNLOADIMAGE_H
+#ifndef DOWNLOADFILE_H
+#define DOWNLOADFILE_H
 
 #include <QObject>
 #include <QNetworkAccessManager>
@@ -10,11 +10,11 @@
 #include <QFile>
 #include <QDebug>
 
-class DownloadImage : public QObject
+class DownloadFile : public QObject
 {
     Q_OBJECT
 public:
-    explicit DownloadImage(QObject *parent = 0);
+    explicit DownloadFile(QObject *parent = 0);
 
     void setUrl(QString sUrl) { urlString = sUrl; }
     void setFileName(QString sFileName) { fileNameString = sFileName; }
@@ -34,4 +34,4 @@ private:
 
 };
 
-#endif // DOWNLOADIMAGE_H
+#endif // DOWNLOADFILE_H

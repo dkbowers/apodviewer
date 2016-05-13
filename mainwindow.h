@@ -16,8 +16,7 @@
 #include <QDir>
 #include <QMessageBox>
 #include <QDate>
-#include "downloadtext.h"
-#include "downloadimage.h"
+#include "downloadfile.h"
 
 namespace Ui {
 class MainWindow;
@@ -36,6 +35,7 @@ private:
     void loadTextAndImage();
     void getJson(QJsonObject& obj);
     void loadTextFields(const QJsonObject& obj);
+    void loadPictureBox();
     void getImageFileName(QString& imgFileName);
 
 public:
@@ -45,11 +45,13 @@ private slots:
     void onTextDownloadComplete();
     void onImageDownloadComplete();
 
-    void on_downloadPicture_clicked();
-    void on_downloadTodaysPicture_clicked();
-    void on_btnPrevious_clicked();
-    void on_btnNext_clicked();
-    void on_btnClose_clicked();
+    void onBtnPictureClick();
+    void onBtnTodayClick();
+    void onBtnPreviousClick();
+    void onBtnNextClick();
+    void onBtnCloseClick();
+
+    void onCalendarWidgetChanged();
 
 private:
     QString downloadDate;
@@ -57,8 +59,8 @@ private:
     QString imageFileName;
     QString textUrl;
     QString imageUrl;
-    DownloadImage imageDownloader;
-    DownloadText textDownloader;
+    DownloadFile imageDownloader;
+    DownloadFile textDownloader;
 
 };
 

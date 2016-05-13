@@ -1,11 +1,11 @@
-#include "downloadtext.h"
+#include "downloadfile.h"
 
-DownloadText::DownloadText(QObject *parent) :
+DownloadFile::DownloadFile(QObject *parent) :
     QObject(parent)
 {
 }
 
-void DownloadText::doDownload()
+void DownloadFile::doDownload()
 {
     manager = new QNetworkAccessManager(this);
 
@@ -15,7 +15,7 @@ void DownloadText::doDownload()
     manager->get(QNetworkRequest(QUrl(urlString)));
 }
 
-void DownloadText::replyFinished (QNetworkReply *reply)
+void DownloadFile::replyFinished (QNetworkReply *reply)
 {
     if(reply->error())
     {
@@ -31,7 +31,7 @@ void DownloadText::replyFinished (QNetworkReply *reply)
         qDebug() << reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
 
         QFile *file = new QFile(fileNameString);
-        if(file->open(QFile::Append))
+        if(file->open(QFile::WriteOnly))
         {
             file->write(reply->readAll());
             file->flush();

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>600</height>
+    <height>644</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,10 +17,10 @@
    <widget class="QLabel" name="pictureBox">
     <property name="geometry">
      <rect>
-      <x>380</x>
+      <x>379</x>
       <y>20</y>
-      <width>400</width>
-      <height>400</height>
+      <width>401</width>
+      <height>351</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -37,9 +37,9 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>430</y>
-      <width>761</width>
-      <height>121</height>
+      <y>390</y>
+      <width>351</width>
+      <height>201</height>
      </rect>
     </property>
     <property name="readOnly">
@@ -50,24 +50,14 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>560</y>
+      <y>600</y>
       <width>746</width>
       <height>36</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Picture Date:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QDateEdit" name="dateEdit"/>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="btnPicture">
        <property name="text">
         <string>Picture for Date</string>
        </property>
@@ -88,7 +78,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButtonToday">
+      <widget class="QPushButton" name="btnToday">
        <property name="text">
         <string>Today's Picture</string>
        </property>
@@ -107,7 +97,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>410</y>
+      <y>370</y>
       <width>91</width>
       <height>16</height>
      </rect>
@@ -120,7 +110,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>80</y>
+      <y>70</y>
       <width>59</width>
       <height>16</height>
      </rect>
@@ -133,7 +123,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>250</y>
+      <y>220</y>
       <width>81</width>
       <height>16</height>
      </rect>
@@ -146,7 +136,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>190</y>
+      <y>170</y>
       <width>59</width>
       <height>16</height>
      </rect>
@@ -159,7 +149,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>300</y>
+      <y>270</y>
       <width>91</width>
       <height>16</height>
      </rect>
@@ -172,7 +162,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>350</y>
+      <y>320</y>
       <width>131</width>
       <height>16</height>
      </rect>
@@ -198,7 +188,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>130</y>
+      <y>120</y>
       <width>59</width>
       <height>16</height>
      </rect>
@@ -213,7 +203,7 @@
       <x>20</x>
       <y>40</y>
       <width>351</width>
-      <height>31</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="readOnly">
@@ -224,7 +214,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>370</y>
+      <y>340</y>
       <width>351</width>
       <height>21</height>
      </rect>
@@ -237,7 +227,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>320</y>
+      <y>290</y>
       <width>351</width>
       <height>21</height>
      </rect>
@@ -250,7 +240,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>100</y>
+      <y>90</y>
       <width>351</width>
       <height>21</height>
      </rect>
@@ -263,9 +253,9 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>150</y>
+      <y>140</y>
       <width>351</width>
-      <height>31</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="readOnly">
@@ -276,7 +266,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>270</y>
+      <y>240</y>
       <width>351</width>
       <height>21</height>
      </rect>
@@ -289,13 +279,23 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>210</y>
+      <y>190</y>
       <width>351</width>
-      <height>31</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="readOnly">
      <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QCalendarWidget" name="calendarWidget">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>390</y>
+      <width>401</width>
+      <height>201</height>
+     </rect>
     </property>
    </widget>
   </widget>

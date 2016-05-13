@@ -17,18 +17,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    spaceimages.cpp \
-    spaceimage.cpp \
     dbmanager.cpp \
-    downloadtext.cpp \
-    downloadimage.cpp
+    downloadfile.cpp
 
 HEADERS  += mainwindow.h \
-    spaceimages.h \
-    spaceimage.h \
     dbmanager.h \
-    downloadtext.h \
-    downloadimage.h
+    downloadfile.h
 
 FORMS    += mainwindow.ui
 

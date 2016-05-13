@@ -21,21 +21,21 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
+    ui->calendarWidget->setMinimumDate(QDate::fromString(QString("1995-06-25"), QString("yyyy-MM-dd")));
+    ui->calendarWidget->setMaximumDate(QDate::currentDate());
+
     downloadDate = QDate::currentDate().toString(QString("yyyy-MM-dd"));
 
-    connect(ui->pushButton, SIGNAL (released()),this, SLOT (on_downloadPicture_clicked()));
-    connect(ui->pushButtonToday, SIGNAL(clicked()), this, SLOT(on_downloadTodaysPicture_clicked()));
-    connect(ui->btnNext, SIGNAL(clicked()), this, SLOT(on_btnPrevious_clicked()));
-    connect(ui->btnPrevious, SIGNAL(clicked()), this, SLOT(on_btnNext_clicked()));
-    connect(ui->btnClose, SIGNAL(clicked()), this, SLOT(on_btnClose_clicked()));
+    connect(ui->calendarWidget, SIGNAL (selectionChanged()), this, SLOT (onCalendarWidgetChanged()));
+
+    connect(ui->btnPicture, SIGNAL (released()),this, SLOT (onBtnPictureClick()));
+    connect(ui->btnToday, SIGNAL(clicked()), this, SLOT(onBtnTodayClick()));
+    connect(ui->btnPrevious, SIGNAL(clicked()), this, SLOT(onBtnPreviousClick()));
+    connect(ui->btnNext, SIGNAL(clicked()), this, SLOT(onBtnNextClick()));
+    connect(ui->btnClose, SIGNAL(clicked()), this, SLOT(onBtnCloseClick()));
 
     connect(&textDownloader, SIGNAL (fileDownloadCompleted()),this, SLOT (onTextDownloadComplete()));
     connect(&imageDownloader, SIGNAL (fileDownloadCompleted()),this, SLOT (onImageDownloadComplete()));
-
-
-    //imageDownloader.setUrl("http://apod.nasa.gov/apod/image/1501/VelaSNR-3_bigCedic1024.jpg");
-    //imageDownloader.setFileName("/private/var/folders/p1/vfmdyfy97314ny63lzl9ygt00000gn/T/VelaSNR-3_bigCedic1024.jpg");
-    //imageDownloader.doDownload();
 
 }
 
@@ -44,60 +44,45 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_downloadPicture_clicked()
+void MainWindow::onCalendarWidgetChanged()
+{
+    qDebug() << "MainWindow::on_CalendarWidget_changed()";
+    ui->calendarWidget->setEnabled(false);
+    loadTextAndImage();
+}
+
+void MainWindow::onBtnPictureClick()
 {
     qDebug() << "void MainWindow::handleButton()";
-    downloadDate = ui->dateEdit->date().toString(QString("yyyy-MM-dd"));
-    qDebug() << "dateEdit =>" << downloadDate;
-
-    textUrl = "https://api.nasa.gov/planetary/apod?api_key=F9WlCrPBArF5YuWIKJQ2sfDM9Ko6m6dJYlsTsbsh&date=";
-    textUrl += downloadDate;
-
-    textFileName = QDir::tempPath();
-    textFileName += QString("/apod");
-    textFileName += downloadDate;
-    textFileName += QString(".txt");
-
-    textDownloader.setUrl(textUrl);
-    textDownloader.setFileName(textFileName);
-    textDownloader.doDownload();
+    loadTextAndImage();
 }
 
-void MainWindow::on_downloadTodaysPicture_clicked()
+void MainWindow::onBtnTodayClick()
 {
     qDebug() << "void MainWindow::on_downloadButton_clicked()";
-    qDebug() << "dateEdit =>" << downloadDate;
-
-    textUrl = "https://api.nasa.gov/planetary/apod?api_key=F9WlCrPBArF5YuWIKJQ2sfDM9Ko6m6dJYlsTsbsh&date=";
-    textUrl += downloadDate;
-
-    textFileName = QDir::tempPath();
-    textFileName += QString("/apod");
-    textFileName += downloadDate;
-    textFileName += QString(".txt");
-
-    textDownloader.setUrl(textUrl);
-    textDownloader.setFileName(textFileName);
-    textDownloader.doDownload();
+    downloadDate = QDate::currentDate().toString(QString("yyyy-MM-dd"));
+    loadTextAndImage();
 }
 
-void MainWindow::on_btnPrevious_clicked()
+void MainWindow::onBtnPreviousClick()
 {
     qDebug() << "void MainWindow::on_btnPrevious_clicked()";
-    QDate downloadDate = ui->dateEdit->date();
-    ui->dateEdit->setDate(downloadDate.addDays(-1));
-    on_downloadPicture_clicked();
+    QDate myDate = ui->calendarWidget->selectedDate();
+    QDate dd = myDate.addDays(-1);
+    ui->calendarWidget->setSelectedDate(dd);
+    ui->calendarWidget->repaint();
 }
 
-void MainWindow::on_btnNext_clicked()
+void MainWindow::onBtnNextClick()
 {
     qDebug() << "void MainWindow::on_btnNext_clicked()";
-    QDate downloadDate = ui->dateEdit->date();
-    ui->dateEdit->setDate(downloadDate.addDays(1));
-    on_downloadPicture_clicked();
+    QDate myDate = ui->calendarWidget->selectedDate();
+    QDate dd = myDate.addDays(1);
+    ui->calendarWidget->setSelectedDate(dd);
+    ui->calendarWidget->repaint();
 }
 
-void MainWindow::on_btnClose_clicked()
+void MainWindow::onBtnCloseClick()
 {
 
 }
@@ -106,8 +91,11 @@ void MainWindow::loadTextAndImage()
 {
     qDebug() << "void MainWindow::loadTextAndImage()";
 
+    // if we don't have image files saved then we need to download them
+    bool needDownload = true;
+
     // get the date of the image we want to view
-    downloadDate = ui->dateEdit->date().toString(QString("yyyy-MM-dd"));
+    downloadDate = ui->calendarWidget->selectedDate().toString(QString("yyyy-MM-dd"));
     qDebug() << "dateEdit =>" << downloadDate;
 
     // using that date construct the text and image file names
@@ -119,48 +107,45 @@ void MainWindow::loadTextAndImage()
     QFileInfo info(textFileName);
     if(info.exists()) {
         // read the file and get the image url
+        QJsonObject jsonObj;
+        getJson(jsonObj);
 
+        imageUrl = jsonObj["url"].toString();
+
+        qDebug() << imageUrl;
+
+        getImageFileName(imageFileName);
+
+        QFileInfo infoImg(imageFileName);
+        if(infoImg.exists()) {
+            loadTextFields(jsonObj);
+            loadPictureBox();
+            needDownload = false;
+            ui->calendarWidget->setEnabled(true);
+        }
     }
 
-    textUrl = "https://api.nasa.gov/planetary/apod?api_key=F9WlCrPBArF5YuWIKJQ2sfDM9Ko6m6dJYlsTsbsh&date=";
-    textUrl += downloadDate;
-
-
-    textDownloader.setUrl(textUrl);
-    textDownloader.setFileName(textFileName);
-    textDownloader.doDownload();
+    if(needDownload){
+        textUrl = "https://api.nasa.gov/planetary/apod?api_key=F9WlCrPBArF5YuWIKJQ2sfDM9Ko6m6dJYlsTsbsh&date=";
+        textUrl += downloadDate;
+        textDownloader.setUrl(textUrl);
+        textDownloader.setFileName(textFileName);
+        textDownloader.doDownload();
+    }
 }
 
 void MainWindow::onTextDownloadComplete()
 {
-    QFile file(textFileName);
-    if (!file.open(QIODevice::ReadOnly))
-        return;
+    QJsonObject jsonObj;
+    getJson(jsonObj);
 
-    QByteArray sFileContents;
-    while (!file.atEnd()) {
-        //QByteArray line = file.readLine();
-        sFileContents = file.readAll();
-    }
-
-    qDebug() << "File Contents => " << sFileContents;
-
-    QJsonDocument jsonResponse = QJsonDocument::fromJson(sFileContents);
-    QJsonObject jsonObj = jsonResponse.object();
     imageUrl = jsonObj["url"].toString();
+
     qDebug() << imageUrl;
 
-    ui->textCopyright->setText(jsonObj["copyright"].toString());
-    ui->textDate->setText(jsonObj["date"].toString());
-    ui->textExplanation->setText(jsonObj["explanation"].toString());
-    ui->textTitle->setText(jsonObj["title"].toString());
-    ui->textServiceVersion->setText(jsonObj["service_version"].toString());
-    ui->textMediaType->setText(jsonObj["media_type"].toString());
-    ui->textUrl->setText(jsonObj["url"].toString());
-    ui->textHDUrl->setText(jsonObj["hdurl"].toString());
+    loadTextFields(jsonObj);
 
-    QString fileExt = imageUrl.right(4);
-    imageFileName = QDir::tempPath() + QString("/apod") + downloadDate + fileExt;
+    getImageFileName(imageFileName);
 
     imageDownloader.setUrl(imageUrl);
     imageDownloader.setFileName(imageFileName);
@@ -169,10 +154,8 @@ void MainWindow::onTextDownloadComplete()
 
 void MainWindow::onImageDownloadComplete()
 {
-    QPixmap pm;
-    pm.load(imageFileName);
-
-    ui->pictureBox->setPixmap(pm);
+    loadPictureBox();
+    ui->calendarWidget->setEnabled(true);
 }
 
 void MainWindow::getJson(QJsonObject& obj)
@@ -192,6 +175,13 @@ void MainWindow::getJson(QJsonObject& obj)
     obj = jsonResponse.object();
 }
 
+
+void MainWindow::getImageFileName(QString& imgFileName)
+{
+    QString fileExt = imageUrl.right(4);
+    imgFileName = QDir::tempPath() + QString("/apod") + downloadDate + fileExt;
+}
+
 void MainWindow::loadTextFields(const QJsonObject& obj)
 {
     ui->textCopyright->setText(obj["copyright"].toString());
@@ -204,8 +194,10 @@ void MainWindow::loadTextFields(const QJsonObject& obj)
     ui->textHDUrl->setText(obj["hdurl"].toString());
 }
 
-void MainWindow::getImageFileName(QString& imgFileName)
+void MainWindow::loadPictureBox()
 {
-    QString fileExt = imageUrl.right(4);
-    imgFileName = QDir::tempPath() + QString("/apod") + downloadDate + fileExt;
+    QPixmap pm;
+    pm.load(imageFileName);
+    ui->pictureBox->setPixmap(pm);
 }
+
