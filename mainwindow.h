@@ -41,9 +41,11 @@ private slots:
 
     // slot for readyRead() signal
     void httpReadyRead();
+    void slotReadData();
 
     // slot for finished() signal from reply
     void httpDownloadFinished();
+    void slotFinished(QNetworkReply *reply);
 
     // slot for downloadProgress()
     void updateDownloadProgress(qint64, qint64);
@@ -53,6 +55,7 @@ private slots:
 
 private:
     QString fileName;
+    QString imageName;
     QUrl url;
     QNetworkAccessManager *manager;
     QNetworkReply *reply;
@@ -62,6 +65,10 @@ private:
     QDir tempDir;
     QByteArray downloadBuffer;
     QString downloadDate;
+
+    QByteArray* m_pBuffer;
+    QString picUrl;
+    QString picFileName;
 };
 
 #endif // MAINWINDOW_H

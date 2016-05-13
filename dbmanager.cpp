@@ -43,6 +43,19 @@ bool DbManager::addPicture(const QString& copyrightField,
 {
     bool success = false;
 
+    QString dbg = "INSERT INTO apod "
+                  "(copyright, "
+                  "explanation, "
+                  "hdurl, "
+                  "media_type, "
+                  "picdate, "
+                  "service_version, "
+                  "title, "
+                  "url) "
+                  "VALUES (" + copyrightField + "," + explanationField + "," + hdurlField + "," + media_typeField + "," + dateField + "," + service_versionField + "," + titleField + "," + urlField + ")";
+    qDebug() << dbg;
+
+
     QSqlQuery queryAdd;
     queryAdd.prepare("INSERT INTO apod (copyright, explanation, hdurl, media_type, picdate, service_version, title, url) VALUES (?,?,?,?,?,?,?,?)");
     queryAdd.bindValue(0, copyrightField);
@@ -53,6 +66,7 @@ bool DbManager::addPicture(const QString& copyrightField,
     queryAdd.bindValue(5, service_versionField);
     queryAdd.bindValue(6, titleField);
     queryAdd.bindValue(7, urlField);
+
 
     /* INSERT INTO apod (copyright,
                         picdate,

@@ -3,7 +3,15 @@
 #include <QDir>
 #include <QDebug>
 #include <QTemporaryDir>
-#include "dbmanager.h"
+//#include "dbmanager.h"
+
+
+#include <QtCore/QUrl>
+#include <QtNetwork/QNetworkRequest>
+#include <QtNetwork/QNetworkReply>
+#include <QJsonDocument>
+#include <QJsonObject>
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -28,7 +36,66 @@ void MainWindow::on_downloadPicture_clicked()
     qDebug() << "void MainWindow::handleButton()";
     downloadDate = ui->dateEdit->date().toString(QString("yyyy-MM-dd"));
     qDebug() << "dateEdit =>" << downloadDate;
-    on_downloadTodaysPicture_clicked();
+    //on_downloadTodaysPicture_clicked();
+
+    QString sUrl = "https://api.nasa.gov/planetary/apod?api_key=F9WlCrPBArF5YuWIKJQ2sfDM9Ko6m6dJYlsTsbsh&date=";
+    sUrl += downloadDate;
+    url = sUrl;
+
+    QEventLoop eventLoop;
+    QNetworkAccessManager mgr;
+    QObject::connect(&mgr, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
+    QNetworkRequest req( QUrl(QString("https://api.nasa.gov/planetary/apod?api_key=F9WlCrPBArF5YuWIKJQ2sfDM9Ko6m6dJYlsTsbsh") ) );
+    QNetworkReply *reply = mgr.get(req);
+    eventLoop.exec();
+
+    if (reply->error() == QNetworkReply::NoError) {
+        QString strReply = (QString)reply->readAll();
+        QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8());
+        QJsonObject jsonObj = jsonResponse.object();
+        qDebug() << jsonObj["url"].toString();
+
+        QString fileExt = jsonObj["url"].toString().right(4);
+        picFileName = QDir::tempPath() + QString("/apodtest") + fileExt;
+
+        qDebug() << picFileName;
+
+        delete reply;
+
+        connect(&mgr, SIGNAL(finished(QNetworkReply*)),
+                    this, SLOT(slotFinished(QNetworkReply*)));
+
+        //connect(&mgr,SIGNAL(readyRead()),this,SLOT(slotReadData()));
+        //connect(&mgr,SIGNAL(finished()), this,SLOT(slotFinished()));
+
+        QNetworkRequest req( QUrl(jsonObj["url"].toString()));
+        QNetworkReply *reply1 = mgr.get(req);
+        //eventLoop.exec();
+
+/*        if (reply->error() == QNetworkReply::NoError) {
+            QByteArray strReply = (QByteArray)reply1->readAll();
+
+            QFile file(picFileName);
+            if(file.open(QIODevice::WriteOnly))
+            {
+              file.write(strReply);
+              file.close();
+              QMessageBox::information(NULL,"Hello!","File has been saved!");
+            }
+            else
+            {
+              QMessageBox::critical(NULL,"Hello!","Error saving file!");
+            }
+
+            delete reply1;
+        } */
+    }
+    else {
+        qDebug() << "Failure" <<reply->errorString();
+        delete reply;
+    }
+
+
 }
 
 void MainWindow::on_downloadTodaysPicture_clicked()
@@ -48,6 +115,7 @@ void MainWindow::on_downloadTodaysPicture_clicked()
     fileName = tempDir.path();
     fileName += QString("/apod");
     fileName += downloadDate;
+    imageName = fileName;
     fileName += QString(".txt");
 
     if (QFile::exists(fileName)) {
@@ -186,8 +254,22 @@ void MainWindow::httpDownloadFinished()
         QString url = obj["url"].toString();
         qDebug() << "url =>" << url;
 
-        DbManager dbm("apod.db");
-        dbm.addPicture(copyright, date, explanation, hdurl, media_type, service_version, title, url);
+        QString fileExt = url.right(4);
+        imageName += fileExt;
+
+        qDebug() << "Image Url: " << url;
+        qDebug() << "Image Name: " << imageName;
+
+        picUrl = url;
+        picFileName = imageName;
+
+        //GetFileNAM gfn(url, imageName);
+        startRequest(QUrl(url));
+
+        //DbManager dbm("apod.db");
+        //dbm.addPicture(copyright, date, explanation, hdurl, media_type, service_version, title, url);
+
+
         ui->textJson->setText(url);
 
     }
@@ -203,27 +285,68 @@ void MainWindow::httpDownloadFinished()
 // This will be called when download button is clicked
 void MainWindow::startRequest(QUrl url)
 {
-    qDebug() << "void MainWindow::startRequest(QUrl url)";
+    if(url.toDisplayString().left(20) == QString("https://api.nasa.gov")) {
+        qDebug() << "void MainWindow::startRequest(QUrl url)";
 
-    // get() method posts a request
-    // to obtain the contents of the target request
-    // and returns a new QNetworkReply object
-    // opened for reading which emits
-    // the readyRead() signal whenever new data arrives.
-    reply = manager->get(QNetworkRequest(url));
+        // get() method posts a request
+        // to obtain the contents of the target request
+        // and returns a new QNetworkReply object
+        // opened for reading which emits
+        // the readyRead() signal whenever new data arrives.
+        reply = manager->get(QNetworkRequest(url));
 
-    // Whenever more data is received from the network,
-    // this readyRead() signal is emitted
-    connect(reply, SIGNAL(readyRead()),
-            this, SLOT(httpReadyRead()));
+        // Whenever more data is received from the network,
+        // this readyRead() signal is emitted
+        connect(reply, SIGNAL(readyRead()),
+                this, SLOT(httpReadyRead()));
 
-    // Also, downloadProgress() signal is emitted when data is received
-    connect(reply, SIGNAL(downloadProgress(qint64,qint64)),
-            this, SLOT(updateDownloadProgress(qint64,qint64)));
+        // Also, downloadProgress() signal is emitted when data is received
+        connect(reply, SIGNAL(downloadProgress(qint64,qint64)),
+                this, SLOT(updateDownloadProgress(qint64,qint64)));
 
-    // This signal is emitted when the reply has finished processing.
-    // After this signal is emitted,
-    // there will be no more updates to the reply's data or metadata.
-    connect(reply, SIGNAL(finished()),
-            this, SLOT(httpDownloadFinished()));
+        // This signal is emitted when the reply has finished processing.
+        // After this signal is emitted,
+        // there will be no more updates to the reply's data or metadata.
+        connect(reply, SIGNAL(finished()),
+                this, SLOT(httpDownloadFinished()));
+    }
+    else {
+        qDebug() << "GetFileName url => " << picUrl;
+        qDebug() << "GetFileName fileName => " << picFileName;
+
+        m_pBuffer = new QByteArray();
+
+        QUrl url(picUrl);
+        reply = manager->get(QNetworkRequest(url));
+
+        connect(reply,SIGNAL(readyRead()),this,SLOT(slotReadData()));
+        connect(reply,SIGNAL(finished()), this,SLOT(slotFinished()));
+    }
+}
+
+//If the reply is finished, save data in buffer to disk
+//as a png image: google_image_logo.png
+void MainWindow::slotFinished(QNetworkReply *reply)
+{
+  qDebug() << "GetFileName => slotFinished";
+
+  QFile file(picFileName);
+  if(file.open(QIODevice::WriteOnly))
+  {
+    //file.write(*m_pBuffer);
+    file.close();
+    QMessageBox::information(NULL,"Hello!","File has been saved!");
+  }
+  else
+  {
+    QMessageBox::critical(NULL,"Hello!","Error saving file!");
+  }
+}
+
+void MainWindow::slotReadData()
+{
+    qDebug() << "GetFileName => slotReadData";
+
+    //append data to QByteArray buffer
+  *m_pBuffer += reply->readAll();
 }
