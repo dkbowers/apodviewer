@@ -39,16 +39,19 @@
       <x>20</x>
       <y>430</y>
       <width>761</width>
-      <height>101</height>
+      <height>121</height>
      </rect>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>550</y>
-      <width>721</width>
+      <x>20</x>
+      <y>560</y>
+      <width>746</width>
       <height>36</height>
      </rect>
     </property>
@@ -71,6 +74,20 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="btnPrevious">
+       <property name="text">
+        <string>Previous</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnNext">
+       <property name="text">
+        <string>Next</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="pushButtonToday">
        <property name="text">
         <string>Today's Picture</string>
@@ -78,7 +95,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="closeBtn">
+      <widget class="QPushButton" name="btnClose">
        <property name="text">
         <string>Close</string>
        </property>
@@ -199,6 +216,9 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QTextEdit" name="textServiceVersion">
     <property name="geometry">
@@ -209,15 +229,21 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QTextEdit" name="textMediaType">
     <property name="geometry">
      <rect>
       <x>20</x>
       <y>320</y>
-      <width>341</width>
+      <width>351</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QTextEdit" name="textDate">
@@ -229,6 +255,9 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QTextEdit" name="textUrl">
     <property name="geometry">
@@ -239,15 +268,21 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QTextEdit" name="textCopyright">
     <property name="geometry">
      <rect>
       <x>20</x>
       <y>270</y>
-      <width>341</width>
+      <width>351</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QTextEdit" name="textHDUrl">
@@ -258,6 +293,9 @@
       <width>351</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
     </property>
    </widget>
   </widget>

@@ -33,6 +33,10 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    void loadTextAndImage();
+    void getJson(QJsonObject& obj);
+    void loadTextFields(const QJsonObject& obj);
+    void getImageFileName(QString& imgFileName);
 
 public:
     void startRequest(QUrl url);
@@ -43,6 +47,9 @@ private slots:
 
     void on_downloadPicture_clicked();
     void on_downloadTodaysPicture_clicked();
+    void on_btnPrevious_clicked();
+    void on_btnNext_clicked();
+    void on_btnClose_clicked();
 
 private:
     QString downloadDate;
