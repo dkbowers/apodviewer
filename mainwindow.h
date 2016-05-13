@@ -16,6 +16,8 @@
 #include <QDir>
 #include <QMessageBox>
 #include <QDate>
+#include "downloadtext.h"
+#include "downloadimage.h"
 
 namespace Ui {
 class MainWindow;
@@ -36,39 +38,21 @@ public:
     void startRequest(QUrl url);
 
 private slots:
+    void onTextDownloadComplete();
+    void onImageDownloadComplete();
+
     void on_downloadPicture_clicked();
     void on_downloadTodaysPicture_clicked();
 
-    // slot for readyRead() signal
-    void httpReadyRead();
-    void slotReadData();
-
-    // slot for finished() signal from reply
-    void httpDownloadFinished();
-    void slotFinished(QNetworkReply *reply);
-
-    // slot for downloadProgress()
-    void updateDownloadProgress(qint64, qint64);
-
-    //void enableDownloadButton();
-    //void cancelDownload();
-
 private:
-    QString fileName;
-    QString imageName;
-    QUrl url;
-    QNetworkAccessManager *manager;
-    QNetworkReply *reply;
-    QFile *file;
-    bool httpRequestAborted;
-    qint64 fileSize;
-    QDir tempDir;
-    QByteArray downloadBuffer;
     QString downloadDate;
+    QString textFileName;
+    QString imageFileName;
+    QString textUrl;
+    QString imageUrl;
+    DownloadImage imageDownloader;
+    DownloadText textDownloader;
 
-    QByteArray* m_pBuffer;
-    QString picUrl;
-    QString picFileName;
 };
 
 #endif // MAINWINDOW_H

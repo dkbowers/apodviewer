@@ -19,12 +19,16 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     spaceimages.cpp \
     spaceimage.cpp \
-    dbmanager.cpp
+    dbmanager.cpp \
+    downloadtext.cpp \
+    downloadimage.cpp
 
 HEADERS  += mainwindow.h \
     spaceimages.h \
     spaceimage.h \
-    dbmanager.h
+    dbmanager.h \
+    downloadtext.h \
+    downloadimage.h
 
 FORMS    += mainwindow.ui
 
