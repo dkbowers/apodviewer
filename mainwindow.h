@@ -2,19 +2,18 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QtWidgets>
+//#include <QtWidgets>
 #include <QWidget>
-//#include <QNetwork>
-#include <QDialog>
+//#include <QDialog>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QUrl>
-#include <QProgressDialog>
+//#include <QProgressDialog>
 #include <QFile>
 #include <QFileInfo>
 #include <QDir>
-#include <QMessageBox>
+//#include <QMessageBox>
 #include <QDate>
 #include "downloadfile.h"
 
@@ -35,7 +34,7 @@ private:
     void loadTextAndImage();
     void getJson(QJsonObject& obj);
     void loadTextFields(const QJsonObject& obj);
-    void loadPictureBox();
+    void loadPictureBox(bool isYouTube = false);
     void getImageFileName(QString& imgFileName);
 
 public:

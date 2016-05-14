@@ -6,8 +6,6 @@
 
 QT += core gui
 QT += network
-QT += sql
-DEFINES  += QT_NO_SSL
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -17,14 +15,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    dbmanager.cpp \
-    downloadfile.cpp
+        downloadfile.cpp
 
 HEADERS  += mainwindow.h \
-    dbmanager.h \
     downloadfile.h
 
 FORMS    += mainwindow.ui
 
-DISTFILES += \
-    api.txt
+RESOURCES += \
+    apodviewer.qrc

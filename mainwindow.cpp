@@ -19,13 +19,12 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     qDebug() << "MainWindow::MainWindow(QWidget *parent) :QMainWindow(parent), ui(new Ui::MainWindow)";
 
+    downloadDate = QDate::currentDate().toString(QString("yyyy-MM-dd"));
+
     ui->setupUi(this);
 
     ui->calendarWidget->setMinimumDate(QDate::fromString(QString("1995-06-25"), QString("yyyy-MM-dd")));
     ui->calendarWidget->setMaximumDate(QDate::currentDate());
-
-    downloadDate = QDate::currentDate().toString(QString("yyyy-MM-dd"));
-
     connect(ui->calendarWidget, SIGNAL (selectionChanged()), this, SLOT (onCalendarWidgetChanged()));
 
     connect(ui->btnPicture, SIGNAL (released()),this, SLOT (onBtnPictureClick()));
@@ -36,8 +35,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(&textDownloader, SIGNAL (fileDownloadCompleted()),this, SLOT (onTextDownloadComplete()));
     connect(&imageDownloader, SIGNAL (fileDownloadCompleted()),this, SLOT (onImageDownloadComplete()));
-
 }
+
 
 MainWindow::~MainWindow()
 {
@@ -46,27 +45,23 @@ MainWindow::~MainWindow()
 
 void MainWindow::onCalendarWidgetChanged()
 {
-    qDebug() << "MainWindow::on_CalendarWidget_changed()";
     ui->calendarWidget->setEnabled(false);
     loadTextAndImage();
 }
 
 void MainWindow::onBtnPictureClick()
 {
-    qDebug() << "void MainWindow::handleButton()";
     loadTextAndImage();
 }
 
 void MainWindow::onBtnTodayClick()
 {
-    qDebug() << "void MainWindow::on_downloadButton_clicked()";
     downloadDate = QDate::currentDate().toString(QString("yyyy-MM-dd"));
     loadTextAndImage();
 }
 
 void MainWindow::onBtnPreviousClick()
 {
-    qDebug() << "void MainWindow::on_btnPrevious_clicked()";
     QDate myDate = ui->calendarWidget->selectedDate();
     QDate dd = myDate.addDays(-1);
     ui->calendarWidget->setSelectedDate(dd);
@@ -75,7 +70,6 @@ void MainWindow::onBtnPreviousClick()
 
 void MainWindow::onBtnNextClick()
 {
-    qDebug() << "void MainWindow::on_btnNext_clicked()";
     QDate myDate = ui->calendarWidget->selectedDate();
     QDate dd = myDate.addDays(1);
     ui->calendarWidget->setSelectedDate(dd);
@@ -89,8 +83,6 @@ void MainWindow::onBtnCloseClick()
 
 void MainWindow::loadTextAndImage()
 {
-    qDebug() << "void MainWindow::loadTextAndImage()";
-
     // if we don't have image files saved then we need to download them
     bool needDownload = true;
 
@@ -112,14 +104,16 @@ void MainWindow::loadTextAndImage()
 
         imageUrl = jsonObj["url"].toString();
 
-        qDebug() << imageUrl;
-
         getImageFileName(imageFileName);
 
         QFileInfo infoImg(imageFileName);
         if(infoImg.exists()) {
             loadTextFields(jsonObj);
-            loadPictureBox();
+            QString mediaType = jsonObj["media_type"].toString();
+            if(mediaType == QString("image"))
+                loadPictureBox();
+            else
+                loadPictureBox(true);
             needDownload = false;
             ui->calendarWidget->setEnabled(true);
         }
@@ -141,15 +135,19 @@ void MainWindow::onTextDownloadComplete()
 
     imageUrl = jsonObj["url"].toString();
 
-    qDebug() << imageUrl;
-
     loadTextFields(jsonObj);
 
-    getImageFileName(imageFileName);
-
-    imageDownloader.setUrl(imageUrl);
-    imageDownloader.setFileName(imageFileName);
-    imageDownloader.doDownload();
+    QString mediaType = jsonObj["media_type"].toString();
+    if(mediaType == QString("image")){
+        getImageFileName(imageFileName);
+        imageDownloader.setUrl(imageUrl);
+        imageDownloader.setFileName(imageFileName);
+        imageDownloader.doDownload();
+    }
+    else{
+        loadPictureBox(true);
+        ui->calendarWidget->setEnabled(true);
+    }
 }
 
 void MainWindow::onImageDownloadComplete()
@@ -169,7 +167,7 @@ void MainWindow::getJson(QJsonObject& obj)
         sFileContents = file.readAll();
     }
 
-    qDebug() << "File Contents => " << sFileContents;
+    file.close();
 
     QJsonDocument jsonResponse = QJsonDocument::fromJson(sFileContents);
     obj = jsonResponse.object();
@@ -194,10 +192,18 @@ void MainWindow::loadTextFields(const QJsonObject& obj)
     ui->textHDUrl->setText(obj["hdurl"].toString());
 }
 
-void MainWindow::loadPictureBox()
+void MainWindow::loadPictureBox(bool isYouTube)
 {
-    QPixmap pm;
-    pm.load(imageFileName);
+    QPixmap pm(400,350);
+    if(isYouTube){
+        pm.scaled(400, 350);
+        ui->pictureBox->setScaledContents(false);
+        pm.load(":/youtube.png");
+    }
+    else{
+        ui->pictureBox->setScaledContents(true);
+        pm.load(imageFileName);
+    }
     ui->pictureBox->setPixmap(pm);
 }
 
